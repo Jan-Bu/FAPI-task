@@ -10,7 +10,6 @@ export async function convertCZKtoEUR(czkAmount: number): Promise<number | null>
     const res = await fetch(PROXY_URL);
     const text: string = await res.text();
 
-    // Správné parsování (první dva řádky = datum a hlavička)
     const lines = text.split("\n").slice(2);
     const eurLine = lines.find((line) => {
       const parts = line.split("|");
