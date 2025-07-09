@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import { PRODUCTS } from "./OrderForm";
 import { calculatePriceWithVAT, formatPrice, convertCZKtoEUR  } from "../utils";
 import { useEffect, useState } from "react";
+import { useCartContext } from "./CartContext";
 
 
 interface OrderState {
@@ -12,8 +13,8 @@ interface OrderState {
 }
 
 const ThankYou = () => {
+  const [cart] = useCartContext();
   const { state } = useLocation() as { state: OrderState };
-  const cart = state.cart;
 
   const totalCZK = Object.entries(cart).reduce(
     (sum, [id, quantity]) => sum + PRODUCTS.find(p => p.id === Number(id))!.price * quantity,

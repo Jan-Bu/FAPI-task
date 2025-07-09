@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import InputField from "./InputField";
 import ProductCard from "./ProductCard";
 import type { Product } from "../types";
 import { formatPrice } from "../utils";
+import { useCartContext } from "./CartContext";
+import { useUserContext } from "./UserContext";
 
 export const PRODUCTS: Product[] = [
   { id: 1, name: "Produkt A", image: "/assets/reklamni.webp", price: 1000 },
@@ -13,17 +15,18 @@ export const PRODUCTS: Product[] = [
 const OrderForm: React.FC = () => {
   const navigate = useNavigate();
 
-  const [cart, setCart] = useState<Record<number, number>>({});
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [cart, setCart] = useCartContext();
+  type User = {
+    name?: string;
+    email?: string;
+    phone?: string;
+    [key: string]: any;
+  };
+  const [user, setUser] = useUserContext() as [User, React.Dispatch<React.SetStateAction<User>>];
+  const [errors, setErrors] = React.useState<{ [key: string]: string }>({});
 
   const addToCart = (productId: number) => {
-    setCart(prev => ({
-      ...prev,
-      [productId]: (prev[productId] || 0) + 1
-    }));
+    setCart({...cart, [productId]: (cart[productId] || 0) + 1 });
   };
 
   const totalPrice = Object.entries(cart).reduce(
@@ -33,18 +36,22 @@ const OrderForm: React.FC = () => {
 
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!name) newErrors.name = "Vyplňte jméno.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = "Neplatný e-mail.";
-    if (!/^\+?\d{7,14}$/.test(phone)) newErrors.phone = "Neplatné telefonní číslo.";
+    if (!user.name) newErrors.name = "Vyplňte jméno.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email || "")) newErrors.email = "Neplatný e-mail.";
+    if (!/^\+?\d{7,14}$/.test(user.phone || "")) newErrors.phone = "Neplatné telefonní číslo.";
     if (totalPrice === 0) newErrors.cart = "Košík je prázdný.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleInputChange = (field: string, value: string) => {
+    setUser({ ...user, [field]: value });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    navigate("/thank-you", { state: { cart, name, email, phone } });
+    navigate("/thank-you", { state: { cart, ...user } });
   };
 
   return (
@@ -64,13 +71,31 @@ const OrderForm: React.FC = () => {
       </div>
 
       <form className="p-4 bg-white shadow rounded w-full max-w-md" onSubmit={handleSubmit}>
-        <InputField label="Jméno" type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+        <InputField
+          label="Jméno"
+          type="text"
+          value={user.name || ""}
+          onChange={(e) => handleInputChange("name", e.target.value)}
+          required
+        />
         {errors.name && <div className="text-red-500">{errors.name}</div>}
 
-        <InputField label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <InputField
+          label="Email"
+          type="email"
+          value={user.email || ""}
+          onChange={(e) => handleInputChange("email", e.target.value)}
+          required
+        />
         {errors.email && <div className="text-red-500">{errors.email}</div>}
 
-        <InputField label="Telefon" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+        <InputField
+          label="Telefon"
+          type="tel"
+          value={user.phone || ""}
+          onChange={(e) => handleInputChange("phone", e.target.value)}
+          required
+        />
         {errors.phone && <div className="text-red-500">{errors.phone}</div>}
 
         <div className="mt-4 text-center">
