@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "fetch-cnb": "C:\\Curl\\curl-8.14.1_2-win64-mingw\\bin\\curl.exe -H \"accept: application/json\" \"https://api.cnb.cz/cnbapi/exrates/daily\" -o C:\\Users\\Jan\\Desktop\\fapi-order\\public\\eur-rate.json",
+    "dev": "npm run fetch-cnb && vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
