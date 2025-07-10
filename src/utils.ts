@@ -6,7 +6,8 @@ export const calculatePriceWithVAT = (price: number, vatRate: number = 0.21) =>
 
 export async function convertCZKtoEUR(czkAmount: number): Promise<number | null> {
   try {
-    const res = await fetch('/eur-rate.json');
+    const url = "https://api.cnb.cz/cnbapi/exrates/daily";
+    const res = await fetch(url, { headers: { accept: "application/json" } });
     const data = await res.json();
 
     const eur = data.rates.find((item: any) => item.currencyCode === "EUR");
@@ -14,7 +15,7 @@ export async function convertCZKtoEUR(czkAmount: number): Promise<number | null>
 
     return czkAmount / eur.rate;
   } catch (error) {
-    console.error("Chyba při načítání kurzu EUR (offline):", error);
+    console.error("Chyba při načítání kurzu EUR z ČNB API:", error);
     return null;
   }
 }

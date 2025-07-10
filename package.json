@@ -4,13 +4,15 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "fetch-cnb": "C:\\Curl\\curl-8.14.1_2-win64-mingw\\bin\\curl.exe -H \"accept: application/json\" \"https://api.cnb.cz/cnbapi/exrates/daily\" -o C:\\Users\\Jan\\Desktop\\fapi-order\\public\\eur-rate.json",
-    "dev": "npm run fetch-cnb && vite",
+    "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "node-fetch": "^3.3.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.3"
